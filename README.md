@@ -1,96 +1,110 @@
-# unslop
+# unslop-4all
 
-Created by Damir Sokolovsky ([@heydamir](https://x.com/heydamir)), who started the [Unslopping series](https://x.com/heydamir/status/2115063463063998736) on X.
+A portable, provider-neutral design skill that turns vibecoded, AI-looking UI into a designed interface with its own character. It audits the screen, derives a direction from the actual product, and improves the UI in deliberate passes instead of applying a generic template.
+
+The original Unslop skill was created by Damir Sokolovsky ([@heydamir](https://x.com/heydamir)) as part of the [Unslopping series](https://x.com/heydamir/status/2115063463063998736). This repository preserves the original attribution and CC BY 4.0 license while adding multi-agent installation support.
 
 ![A vibecoded dashboard unslopping itself, frame by frame](skills/unslop/references/refs/story-dashboard-frames.webp)
 
-unslop is a skill for Claude Code, Codex and Google Antigravity that turns vibecoded, AI-looking UI into a designed interface with its own character. It finds the slop first, the purple gradients, glows, emoji labels, shouty copy and uneven spacing, then sets a direction from your product and fixes the screen pass by pass like a designer doing a redline review. It works in whatever your screen is built with, like Next.js, React, Vue, Svelte, Tailwind or plain HTML and CSS, on dashboards, apps and landing pages, and even on a live site when all you have is a link.
+## Works across agents
+
+The core is a plain Agent Skill: one SKILL.md with bundled scripts and references. It is not coupled to Claude, OpenAI, Gemini, or a specific model provider.
+
+Native skill locations are provided for Agent Skills-compatible environments, including:
+
+- OpenAI Codex
+- Claude Code
+- Gemini CLI
+- Google Antigravity
+- Cursor
+- Cline
+- OpenCode
+- Roo Code
+- GitHub Copilot
+
+Continue and Windsurf receive small native rule files that activate the shared skill. Other agents can use the same workflow whenever their host can read a project file or load Markdown instructions. Tool availability remains the responsibility of the agent runtime.
+
+See [agent compatibility and installation details](docs/agent-compatibility.md).
 
 ## Install
 
-For Claude Code, install it as a plugin. Run this in a terminal to get it in every project:
+Install the skill for all supported agents in the current repository:
 
-```bash
-claude plugin install unslop --marketplace heydamir/unslop
-```
+~~~bash
+node scripts/install.mjs --agent all
+~~~
 
-On an older Claude Code without `--marketplace`, the same in two steps:
+Install only the integrations you use:
 
-```bash
-claude plugin marketplace add heydamir/unslop
-claude plugin install unslop@heydamir
-```
+~~~bash
+node scripts/install.mjs --agent claude,cursor,codex
+~~~
 
-To get it in a single project only, run the install from that project's root folder, the one you start Claude Code in, and add `--scope local`. To turn it on for everyone who works in the project, add `--scope project` instead and commit `.claude/settings.json`. Each teammate then runs this once in their own copy of the project:
+Install globally for your user account:
 
-```bash
-claude plugin marketplace add heydamir/unslop
-claude plugin install unslop@heydamir --scope project
-```
+~~~bash
+node scripts/install.mjs --agent all --scope global
+~~~
 
-Then start a new Claude Code session, or run `/reload-plugins` in one that is already open.
+Preview changes or update existing installed copies:
 
-To update, run `claude plugin update unslop@heydamir`, or turn on auto-update for the heydamir marketplace under Marketplaces in `/plugin`.
+~~~bash
+node scripts/install.mjs --agent all --dry-run
+node scripts/install.mjs --agent all --force
+~~~
 
-If you copied unslop into `~/.claude/skills/` or a project's `.claude/skills/` before, delete that copy, or `/unslop` keeps running it instead of the plugin.
+The installer preserves existing installations by default. It only replaces files when --force is supplied, and it keeps unrelated files in the destination directory.
 
-For Codex, ask it to install the skill straight from this repo.
+## Manual installation
 
-```
-$skill-installer install https://github.com/heydamir/unslop/tree/main/skills/unslop
-```
+For any agent that supports the Agent Skills standard, copy the complete skills/unslop directory to .agents/skills/unslop in the project or ~/.agents/skills/unslop for your user account.
 
-Or copy it by hand into `~/.agents/skills/`, or into `.agents/skills/` inside a single project.
-
-```bash
-git clone https://github.com/heydamir/unslop
-mkdir -p ~/.agents/skills && cp -r unslop/skills/unslop ~/.agents/skills/
-```
-
-For Google Antigravity, copy the skill into your skills folder.
-
-```bash
-git clone https://github.com/heydamir/unslop
-mkdir -p ~/.gemini/config/skills && cp -r unslop/skills/unslop ~/.gemini/config/skills/
-```
-
-For a single project, copy it into `.agents/skills/` inside that project instead.
-
-To snapshot a live site or create a story video, install Playwright and its Chromium browser from the project directory where you run the skill:
-
-```bash
-npm install -D playwright
-npx playwright install chromium
-```
-
-Story videos also require ffmpeg installed and available on your PATH.
+You can also install from the project root by asking a filesystem-capable agent to read skills/unslop/SKILL.md and follow it.
 
 ## Use
 
-In Claude Code, type `/unslop` with what you want, or `/unslop:unslop` if another skill already has that name. In Codex, type `$unslop` the same way. Or just ask in your own words and the agent picks the skill up by itself.
+Ask your agent to unslop, polish, clean up, or redesign a screen:
 
-```
+~~~text
 /unslop this dashboard
 /unslop the hero of https://example.com
-/unslop my landing page and make the story video so I can post it
-```
+Make this landing page feel designed rather than AI-generated.
+~~~
 
-It audits the screen and proposes a direction before it edits anything, so you can steer it early. If the screen is already good, it tells you so and suggests a few small refinements instead of redesigning it.
+The skill automatically activates in agents that support skill discovery when the task matches its description. In other environments, reference the skill path explicitly.
 
 ## What it does
 
 - **Audit.** Lists every sign of slop with where it lives.
-- **Direction.** Character, world, the one or two moments that carry the color, and a signature detail, all taken from your product.
-- **Passes.** Spacing, color, icons, copy, type, layout, details, visuals and motion, in that order.
-- **Visuals.** Shows your product instead of a glossy blob. When a hero needs a scene or an object, it can generate one through an image service like fal, Replicate, OpenAI images or Higgsfield. If none is connected, it offers to connect one as an MCP server, and it shows the prompt and asks before every paid generation. Dashboards and apps rarely need one.
-- **Story video.** A square video under 10 seconds of your screen unslopping itself, ready to post. It needs Playwright and ffmpeg.
+- **Direction.** Derives a product-specific character, world, moments, and signature detail.
+- **Passes.** Works through spacing, color, icons, copy, type, layout, details, visuals, and motion in order.
+- **Visuals.** Uses available image tools only when they add value; otherwise it works with the assets and code already available.
+- **Verification.** Checks the edited screen against the initial audit and reports anything that could not be verified.
+- **Story video.** Can create a short screen-recording-style story with Playwright and ffmpeg.
 
-Try it on the two vibecoded screens in [examples](examples).
+The skill works with React, Tailwind, HTML, CSS, Vue, Svelte, and other stacks because it focuses on the rendered interface and the source files that produce it.
 
-## Hire the unslopper
+## Optional browser and video dependencies
 
-Would rather have a designer do it? Damir unslops one key screen in 3 days, built in your stack, at [heydamir.design/unslop](https://heydamir.design/unslop).
+To snapshot a live site or create a story video, install Playwright and Chromium in the project:
 
-## License
+~~~bash
+npm install -D playwright
+npx playwright install chromium
+~~~
 
-[CC BY 4.0](LICENSE). Use it, change it and share it, including commercially, as long as you credit Damir Sokolovsky ([@heydamir](https://x.com/heydamir)) and link back to this repository.
+Story videos also require ffmpeg on your PATH. These dependencies are optional; the design workflow itself does not require them.
+
+## Development
+
+Run the test suite:
+
+~~~bash
+npm test
+~~~
+
+CI tests supported Node.js LTS lines.
+
+## License and attribution
+
+[CC BY 4.0](LICENSE). Use, adapt, and share this work, including commercially, while crediting Damir Sokolovsky ([@heydamir](https://x.com/heydamir)) and linking to the original [Unslop repository](https://github.com/heydamir/unslop).
