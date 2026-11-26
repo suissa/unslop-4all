@@ -1,0 +1,13 @@
+{
+  "name": "unslop-4all",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A provider-neutral UI design skill and installer for coding agents",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
